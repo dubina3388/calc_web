@@ -1,0 +1,42 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'router.dart';
+import 'theme_controller.dart';
+
+Future<void> main() async {
+  usePathUrlStrategy();
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  themeController.load(prefs);
+  runApp(const CalcApp());
+}
+
+class CalcApp extends StatelessWidget {
+  const CalcApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeController,
+      builder: (context, mode, _) => MaterialApp.router(
+        title: 'Калькулятор и конвертер',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+          useMaterial3: true,
+        ),
+        darkTheme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.indigo,
+            brightness: Brightness.dark,
+          ),
+          useMaterial3: true,
+        ),
+        themeMode: mode,
+        routerConfig: appRouter,
+      ),
+    );
+  }
+}
